@@ -51,7 +51,10 @@ dependencies {
     implementation(libs.androidx.material3)
 
     implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
