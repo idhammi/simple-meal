@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,42 +26,85 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.example.simplemeal.data.remote.response.CategoriesItem
 import com.example.simplemeal.ui.MainViewModel
+import kotlinx.serialization.Serializable
+
+@Serializable
+object Home
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
-    val categories by viewModel.categories.collectAsState()
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel = viewModel(),
+    onItemClicked: (CategoriesItem) -> Unit
+) {
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val categories by viewModel.categoriesFiltered.collectAsState()
 
-    Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
+    HomeContent(
+        modifier = modifier,
+        searchQuery = searchQuery,
+        categories = categories,
+        onSearching = { viewModel.searchCategories(it) },
+        onItemClicked = onItemClicked
+    )
+}
+
+@Composable
+private fun HomeContent(
+    modifier: Modifier = Modifier,
+    searchQuery: String,
+    categories: List<CategoriesItem>,
+    onSearching: (String) -> Unit,
+    onItemClicked: (CategoriesItem) -> Unit
+) {
+    Scaffold { innerPadding ->
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            ListCategories(categories)
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                value = searchQuery,
+                onValueChange = { onSearching(it) },
+                label = { Text("Search") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") }
+            )
+            ListCategories(categories) {
+                onItemClicked(it)
+            }
         }
     }
 }
 
 @Composable
-fun ListCategories(categories: List<CategoriesItem>) {
+fun ListCategories(categories: List<CategoriesItem>, onItemClicked: (CategoriesItem) -> Unit) {
     LazyColumn(
         modifier = Modifier.graphicsLayer { renderEffect = null },
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(categories) { item ->
-            ItemCategories(item)
+            ItemCategories(item) {
+                onItemClicked(it)
+            }
         }
     }
 }
 
 @Composable
-fun ItemCategories(item: CategoriesItem) {
+fun ItemCategories(
+    item: CategoriesItem,
+    onItemClicked: (CategoriesItem) -> Unit
+) {
     Card(
-        onClick = { /* TODO */ }
+        onClick = { onItemClicked(item) },
     ) {
         Row(
             modifier = Modifier
@@ -102,13 +149,10 @@ fun HomeScreen_Preview() {
         ),
     )
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            ListCategories(categories)
-        }
-    }
+    HomeContent(
+        searchQuery = "",
+        categories = categories,
+        onSearching = { },
+        onItemClicked = { }
+    )
 }
