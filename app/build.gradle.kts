@@ -53,11 +53,19 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    // networking
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+
+    // image loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // koin
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

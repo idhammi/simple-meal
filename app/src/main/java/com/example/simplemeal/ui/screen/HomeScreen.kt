@@ -19,18 +19,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.simplemeal.data.remote.response.CategoriesItem
 import com.example.simplemeal.ui.MainViewModel
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 object Home
@@ -38,11 +38,11 @@ object Home
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(),
+    viewModel: MainViewModel = koinViewModel(),
     onItemClicked: (CategoriesItem) -> Unit
 ) {
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val categories by viewModel.categoriesFiltered.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val categories by viewModel.categoriesFiltered.collectAsStateWithLifecycle()
 
     HomeContent(
         modifier = modifier,
